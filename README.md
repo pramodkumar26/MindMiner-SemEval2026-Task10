@@ -1,4 +1,4 @@
-# SemEval 2026 Task 10: PsyCoMark System Paper
+# SemEval-2026 Task 10: Multi-Model Approaches to Conspiracy Detection and Psycholinguistic Marker Extraction
 
 This repository contains code and results for our participation in SemEval 2026 Task 10, focused on psycholinguistic conspiracy marker extraction and detection from Reddit comments.
 
