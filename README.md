@@ -1,6 +1,6 @@
 # SemEval-2026 Task 10: Multi-Model Approaches to Conspiracy Detection and Psycholinguistic Marker Extraction
 
-Code and results from our work on SemEval-2026 Task 10 (PsyCoMark), where we tried to detect conspiratorial thinking and extract psycholinguistic markers from Reddit comments.
+Code and results from our work on SemEval-2026 Task 10 (PsyCoMark), where we tried to detect conspiratorial thinking and extract psycholinguistic markers from Reddit comments. 
 
 ## What we did
 
