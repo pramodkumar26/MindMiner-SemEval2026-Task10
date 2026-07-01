@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindMiner at SemEval-2026 Task 10</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000;
+      border-bottom: 3px solid #CFB87C;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .logo-bar {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: #CFB87C;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+      max-width: 800px;
+      margin: 0 auto 0.6rem;
+    }
+
+    header h2 {
+      font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+      font-weight: 400;
+      color: #CFB87C;
+      font-style: italic;
+      margin-bottom: 0.8rem;
+    }
+
+    .authors {
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 0.3rem;
+    }
+
+    .affiliation {
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    /* CTA buttons */
+    .cta {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      padding: 2.5rem 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 2.2rem;
+      border-radius: 6px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(207,184,124,0.3);
+    }
+
+    .btn-paper {
+      background: #CFB87C;
+      color: #000;
+    }
+
+    .btn-code {
+      background: transparent;
+      color: #CFB87C;
+      border: 2px solid #CFB87C;
+    }
+
+    .btn-code:hover {
+      background: rgba(207,184,124,0.08);
+    }
+
+    /* Main content */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .section {
+      margin-bottom: 2.5rem;
+    }
+
+    .section h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #CFB87C;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .abstract {
+      background: #1a1a1a;
+      border-left: 3px solid #CFB87C;
+      border-radius: 4px;
+      padding: 1.2rem 1.4rem;
+      font-size: 0.97rem;
+      line-height: 1.75;
+      color: #ddd;
+    }
+
+    /* Results grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 580px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    .result-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .result-card .big-num {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #CFB87C;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .result-card .label {
+      font-size: 0.82rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .result-card .sublabel {
+      font-size: 0.78rem;
+      color: #666;
+      margin-top: 0.2rem;
+    }
+
+    /* Per-marker table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    thead tr {
+      background: #000;
+    }
+
+    thead th {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      color: #CFB87C;
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      border-top: 1px solid #222;
+    }
+
+    tbody tr:hover {
+      background: #202020;
+    }
+
+    tbody td {
+      padding: 0.65rem 1rem;
+      color: #ddd;
+    }
+
+    tbody tr.highlight td {
+      color: #CFB87C;
+      font-weight: 600;
+    }
+
+    tbody tr.victim td {
+      color: #cc4444;
+    }
+
+    /* Models list */
+    .model-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .model-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 0.7rem 1rem;
+    }
+
+    .model-name {
+      font-weight: 600;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+    }
+
+    .model-sub {
+      font-size: 0.78rem;
+      color: #777;
+      margin-top: 0.15rem;
+    }
+
+    .param-badge {
+      background: #000;
+      color: #CFB87C;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* Key finding highlight */
+    .finding {
+      background: #000;
+      border: 1px solid #CFB87C;
+      border-radius: 8px;
+      padding: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .finding .num {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .finding .num.gold { color: #CFB87C; }
+    .finding .num.red  { color: #cc4444; }
+
+    .finding .vs {
+      font-size: 1.2rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .finding .note {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 0.3rem;
+    }
+
+    /* Citation box */
+    .citation {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #aaa;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Contact */
+    .contact-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      font-size: 0.92rem;
+      color: #aaa;
+    }
+
+    .contact-item a {
+      color: #CFB87C;
+      text-decoration: none;
+    }
+
+    .contact-item a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.78rem;
+      color: #444;
+      border-top: 1px solid #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-bar">University of Colorado Boulder &nbsp;&middot;&nbsp; SemEval-2026 Workshop, ACL 2026</div>
+  <h1>MindMiner at SemEval-2026 Task 10</h1>
+  <h2>Multi-Model Approaches to Conspiracy Detection and Psycholinguistic Marker Extraction</h2>
+  <p class="authors">Pramod Kumar Ajmeera &nbsp;&nbsp;|&nbsp;&nbsp; Akshara Sri Lakshmipathy</p>
+  <p class="affiliation">University of Colorado Boulder</p>
+</header>
+
+<div class="cta">
+  <a class="btn btn-paper" href="https://aclanthology.org/2026.semeval-1.4/" target="_blank">
+    &#128196; Read the Paper
+  </a>
+  <a class="btn btn-code" href="https://github.com/pramodkumar26/MindMiner-SemEval2026-Task10" target="_blank">
+    &#128187; View Code on GitHub
+  </a>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <h3>Abstract</h3>
+    <p class="abstract">
+      Conspiracy narratives on social media often hide in subtle word cues and quiet reasoning patterns, making their detection a challenging task for NLP systems. SemEval-2026 Task 10 PsyCoMark introduces a benchmark pairing binary conspiracy detection with extraction of five psycholinguistic markers: Actor, Action, Effect, Victim, and Evidence. We examine how modern transformer-based models grasp both conspiratorial intent and the deeper reasoning structures behind such narratives, using rehydrated Reddit comments annotated by experts in psychology and linguistics. Our best system reaches <strong>0.80 weighted F1</strong> on conspiracy detection and <strong>0.16 macro F1</strong> on marker extraction, with per-marker F1 ranging from 0.36 (Actor) to 0.00 (Victim).
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Results at a Glance</h3>
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="big-num">0.80</div>
+        <div class="label">Conspiracy Detection</div>
+        <div class="sublabel">Weighted F1 &middot; Subtask 2 &middot; 2nd place</div>
+      </div>
+      <div class="result-card">
+        <div class="big-num">0.16</div>
+        <div class="label">Marker Extraction</div>
+        <div class="sublabel">Macro F1 &middot; Subtask 1 &middot; 13th place</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Key Finding: The 36x Gap</h3>
+    <div class="finding">
+      <div>
+        <div class="num gold">0.36</div>
+        <div class="note">Actor (best)</div>
+      </div>
+      <div class="vs">vs</div>
+      <div>
+        <div class="num red">0.00</div>
+        <div class="note">Victim (worst)</div>
+      </div>
+    </div>
+    <p style="margin-top:0.9rem; font-size:0.9rem; color:#999; line-height:1.65;">
+      Actor markers are explicit noun phrases with clear syntactic boundaries. Victim markers are typically implicit pronouns scattered across sentences, giving span-tagging models nothing to anchor to. This is not a capacity problem, it is a structural one.
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Per-Marker Breakdown (DeBERTa-v3-large)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Marker</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>Actor</td><td>0.368</td><td>0.360</td><td>0.364</td>
+        </tr>
+        <tr>
+          <td>Effect</td><td>0.185</td><td>0.239</td><td>0.209</td>
+        </tr>
+        <tr>
+          <td>Action</td><td>0.147</td><td>0.106</td><td>0.123</td>
+        </tr>
+        <tr>
+          <td>Evidence</td><td>0.109</td><td>0.082</td><td>0.094</td>
+        </tr>
+        <tr class="victim">
+          <td>Victim</td><td>0.000</td><td>0.000</td><td>0.000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>Models Tested</h3>
+    <div class="model-list">
+      <div class="model-row">
+        <div>
+          <div class="model-name">DistilBERT</div>
+          <div class="model-sub">Distilled BERT, lightweight baseline</div>
+        </div>
+        <div class="param-badge">66M</div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">DeBERTa-v3-base</div>
+          <div class="model-sub">Disentangled attention</div>
+        </div>
+        <div class="param-badge">184M</div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">RoBERTa-large</div>
+          <div class="model-sub">Robust BERT variant</div>
+        </div>
+        <div class="param-badge">355M</div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">DeBERTa-v3-large</div>
+          <div class="model-sub">Best overall, full fine-tune</div>
+        </div>
+        <div class="param-badge">435M</div>
+      </div>
+      <div class="model-row">
+        <div>
+          <div class="model-name">LLaMA-3.1-8B + LoRA</div>
+          <div class="model-sub">4-bit quant, r=16, &alpha;=32, only 0.5% params trained</div>
+        </div>
+        <div class="param-badge">8B</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Cite</h3>
+    <div class="citation">@inproceedings{ajmeera-lakshmipathy-2026-mindminer,
+    title     = "{M}ind{M}iner at {S}em{E}val-2026 Task 10: Multi-Model Approaches to Conspiracy Detection and Psycholinguistic Marker Extraction",
+    author    = "Ajmeera, Pramod Kumar and Lakshmipathy, Akshara Sri",
+    booktitle = "Proceedings of the 20th International Workshop on Semantic Evaluation (2026)",
+    month     = jul,
+    year      = "2026",
+    address   = "San Diego, California, USA",
+    publisher = "Association for Computational Linguistics",
+    url       = "https://aclanthology.org/2026.semeval-1.4/",
+    pages     = "22--29",
+    ISBN      = "979-8-89176-414-9"
+}</div>
+  </div>
+
+  <div class="section">
+    <h3>Contact</h3>
+    <div class="contact-row">
+      <div class="contact-item">Pramod Kumar Ajmeera &mdash; <a href="mailto:pramod.ajmeera@colorado.edu">pramod.ajmeera@colorado.edu</a></div>
+      <div class="contact-item">Akshara Sri Lakshmipathy &mdash; <a href="mailto:akshara.lakshmipathy@colorado.edu">akshara.lakshmipathy@colorado.edu</a></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  MindMiner &middot; SemEval-2026 Task 10 PsyCoMark &middot; University of Colorado Boulder &middot; ACL 2026
+</footer>
+
+</body>
+</html>
